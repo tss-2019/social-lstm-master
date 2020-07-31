@@ -130,6 +130,7 @@ def train(args):
     # Log directory
     log_directory = os.path.join(prefix, 'log/')
     plot_directory = os.path.join(prefix, 'plot/', method_name, model_name)
+    # print(plot_directory)
     plot_train_file_directory = 'validation'
 
     # Logging files
@@ -530,10 +531,10 @@ def train(args):
                 best_val_data_loss) + '\n')
 
     # FileNotFoundError: [Errno 2] No such file or directory: 'plot/SOCIALLSTM\\LSTM\\validation\\biwi\\biwi_hotel_4.pkl'
-    # 会创建文件失败，原因未知
     if validation_dataset_executed:
         dataloader.switch_to_dataset_type(load_data=False)
         create_directories(plot_directory, [plot_train_file_directory])
+        # 找不到这个文件，是我手动添加的
         dataloader.write_to_plot_file(all_epoch_results[len(all_epoch_results) - 1],
                                       os.path.join(plot_directory, plot_train_file_directory))
 
