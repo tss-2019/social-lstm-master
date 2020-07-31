@@ -595,6 +595,7 @@ def main():
 
     # creation of paths
     save_plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'plots/')
+    # print(plot_file_directory)
     # plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory)
     plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory, 'biwi')
     video_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'videos/')
