@@ -531,10 +531,14 @@ def train(args):
                 best_val_data_loss) + '\n')
 
     # FileNotFoundError: [Errno 2] No such file or directory: 'plot/SOCIALLSTM\\LSTM\\validation\\biwi\\biwi_hotel_4.pkl'
+    # validation_dataset_executed = True
     if validation_dataset_executed:
+        # print("用于绘图的文件开始保存了")
         dataloader.switch_to_dataset_type(load_data=False)
         create_directories(plot_directory, [plot_train_file_directory])
         # 找不到这个文件，是我手动添加的
+        # print(all_epoch_results)
+        # print(len(all_epoch_results) - 1)
         dataloader.write_to_plot_file(all_epoch_results[len(all_epoch_results) - 1],
                                       os.path.join(plot_directory, plot_train_file_directory))
 

@@ -597,7 +597,7 @@ def main():
     save_plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'plots/')
     # print(plot_file_directory)
     # plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory)
-    plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory, 'biwi')
+    plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory, 'didida')
     video_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'videos/')
     # print(plot_directory)
     plot_file_name = get_all_file_names(plot_directory)
