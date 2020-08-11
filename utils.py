@@ -38,8 +38,8 @@ class DataLoader():
         # base train files
         base_train_dataset = [# '/data/train/didida/didida2.txt',
                               #  '/data/train/bingchang/111.txt'
-                              '/data/train/bingchang/100row.txt',
-                              # '/data/train/biwi/biwi_hotel.txt',
+                              # '/data/train/bingchang/100.txt'
+                              '/data/train/biwi/biwi_hotel.txt',
                               # '/data/train/crowds/arxiepiskopi1.txt', '/data/train/crowds/crowds_zara02.txt',
                               # '/data/train/crowds/crowds_zara03.txt', '/data/train/crowds/students001.txt',
                               # '/data/train/crowds/students003.txt',
@@ -433,12 +433,12 @@ class DataLoader():
                 numPedsList_batch.append(seq_numPedsList)
                 PedsList_batch.append(seq_PedsList)
                 # 获取序列的正确目标ped ID
+                target_ids.append(
+                    self.target_ids[self.dataset_pointer][math.floor((self.frame_pointer) / self.seq_length)])
                 # print('获取序列的正确目标ped ID')
                 # print(target_ids)
                 # print(self.dataset_pointer)
                 # print(math.floor((self.frame_pointer) / self.seq_length))
-                target_ids.append(
-                    self.target_ids[self.dataset_pointer][math.floor((self.frame_pointer) / self.seq_length)])
                 self.frame_pointer += self.seq_length
 
                 d.append(self.dataset_pointer)
