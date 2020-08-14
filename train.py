@@ -224,7 +224,14 @@ def train(args):
                                                        args.grid_size, args.use_cuda)
                         grids[dataloader.dataset_pointer].append(grid_seq)
                     else:
-                        grid_seq = grids[dataloader.dataset_pointer][(num_batch * dataloader.batch_size) + sequence]
+                        # grid_seq = grids[dataloader.dataset_pointer][(num_batch * dataloader.batch_size) + sequence]
+                        # print(dataloader.dataset_pointer)
+                        # print((num_batch * dataloader.batch_size) + sequence)
+                        # print(grids)
+                        # 自己加入测试
+                        grid_seq = getSequenceGridMask(x_seq, dataset_data, PedsList_seq, args.neighborhood_size,
+                                                       args.grid_size, args.use_cuda)
+
                 else:
                     grid_seq = getSequenceGridMask(x_seq, dataset_data, PedsList_seq, args.neighborhood_size,
                                                    args.grid_size, args.use_cuda)

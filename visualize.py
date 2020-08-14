@@ -162,7 +162,6 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
     print("orig pred_")
     print(pred_trajs[:, look_up[target_id], :])
 
-
     print("true_")
     print(true_trajs[:, look_up[target_id], :])
     print("pred_")
@@ -212,7 +211,6 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
             if ped_id in nodesPresent[tstep]:
                 traj_data[ped_index][0].append(true_pos[ped_index, :])
                 traj_data[ped_index][1].append(pred_pos[ped_index, :])
-
 
     processed_ped_number = 0  # number of peds already processed
     num_of_peds = math.ceil(max_ped_ratio * len(traj_data))  # maximum number of peds will be processed
@@ -342,7 +340,7 @@ def create_plot_animation(plt, trajs, shuffled_ped_ids, target_id, inv_lookup, s
                 marker_arr.append(curr_marker)
             ped_id = inv_lookup[index]
             selected_frames = data_frames[0:frame_num + 1]
-            frame_str = "Frame: " + str(int(selected_frames[-1]))
+            # frame_str = "Frame: " + str(int(selected_frames[-1]))
             true_ped_text = 'ped ' + str(ped_id) + ' true'
             pred_ped_text = 'ped ' + str(ped_id) + ' pred.'
             if ped_id == target_id:
@@ -370,14 +368,16 @@ def create_plot_animation(plt, trajs, shuffled_ped_ids, target_id, inv_lookup, s
 
             frame_obj.append(true_sc)
 
-        title = plt.text(0.5, 1.01, frame_str, ha="center", va="bottom", color=np.random.rand(3),
+        # title = plt.text(0.5, 1.01, frame_str, ha="center", va="bottom", color=np.random.rand(3),
+        #                  transform=plt.gca().transAxes, fontsize="large")
+        title = plt.text(0.5, 1.01, '测试', ha="center", va="bottom", color=np.random.rand(3),
                          transform=plt.gca().transAxes, fontsize="large")
         frame_obj.append(title)
         frames.append(frame_obj)
 
     plt.gca().legend(loc='best')
     ani = animation.ArtistAnimation(plt.gcf(), frames, interval=1200, blit=False, repeat_delay=1000)
-    ani.save(plot_directory+'/'+name+'.mp4')
+    ani.save(plot_directory + '/' + name + '.mp4')
     print("Video creation ended.")
 
 
@@ -597,7 +597,7 @@ def main():
     save_plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'plots/')
     # print(plot_file_directory)
     # plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory)
-    plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory, 'didida')
+    plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory, 'ceshi')
     video_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'videos/')
     # print(plot_directory)
     plot_file_name = get_all_file_names(plot_directory)
