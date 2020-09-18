@@ -39,8 +39,8 @@ class DataLoader():
         base_train_dataset = [# '/data/train/didida/didida2.txt',
                               #  '/data/train/bingchang/111.txt'
                               # '/data/train/bingchang/100.txt'
-                              # '/data/train/biwi/biwi_hotel.txt',
-                                '/data/train/ceshi/100_1.txt',
+                              '/data/train/biwi/biwi_hotel.txt',
+                                # '/data/train/ceshi/100_1.txt',
                               # '/data/train/crowds/arxiepiskopi1.txt', '/data/train/crowds/crowds_zara02.txt',
                               # '/data/train/crowds/crowds_zara03.txt', '/data/train/crowds/students001.txt',
                               # '/data/train/crowds/students003.txt',
@@ -64,7 +64,7 @@ class DataLoader():
                               ]
         # dimensions of each file set
         # self.dataset_dimensions = {'biwi': [720, 576], 'crowds': [720, 576], 'stanford': [595, 326], 'mot': [768, 576]}
-        self.dataset_dimensions = {'train': [720, 576], 'validation': [720, 576]}
+        self.dataset_dimensions = {'train': [595, 326], 'validation': [595, 326]}
         # self.dataset_dimensions = {'test': [720, 576]}
 
         # 原始数据所在的数据目录列表
@@ -443,7 +443,7 @@ class DataLoader():
 
                 # 这个是原本代码中存在的，用原始数据的时候不会出错，实际上也越界了，但是不会出bug
                 # 但是当使用冰场数据的时候会发生索引越界的情况
-                # self.frame_pointer += self.seq_length
+                self.frame_pointer += self.seq_length
 
                 d.append(self.dataset_pointer)
                 i += 1

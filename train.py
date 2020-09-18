@@ -26,7 +26,7 @@ def main():
     # Size of each batch parameter
     parser.add_argument('--batch_size', type=int, default=5,
                         help='minibatch size')
-    # Length of sequence to be considered parameter
+    # 要考虑的序列长度参数
     parser.add_argument('--seq_length', type=int, default=20,
                         help='RNN sequence length')
     parser.add_argument('--pred_length', type=int, default=12,
@@ -35,10 +35,12 @@ def main():
     parser.add_argument('--num_epochs', type=int, default=30,
                         help='number of epochs')
     # Frequency at which the model should be saved parameter
+    # 模型应保存的频率参数
     parser.add_argument('--save_every', type=int, default=400,
                         help='save frequency')
     # TODO: (resolve) Clipping gradients for now. No idea whether we should
     # Gradient value at which it should be clipped
+    # 应当修剪的渐变值
     parser.add_argument('--grad_clip', type=float, default=10.,
                         help='clip gradients at this value')
     # Learning rate parameter
@@ -224,11 +226,6 @@ def train(args):
                                                        args.grid_size, args.use_cuda)
                         grids[dataloader.dataset_pointer].append(grid_seq)
                     else:
-                        # grid_seq = grids[dataloader.dataset_pointer][(num_batch * dataloader.batch_size) + sequence]
-                        # print(dataloader.dataset_pointer)
-                        # print((num_batch * dataloader.batch_size) + sequence)
-                        # print(grids)
-                        # 自己加入测试
                         grid_seq = getSequenceGridMask(x_seq, dataset_data, PedsList_seq, args.neighborhood_size,
                                                        args.grid_size, args.use_cuda)
 
