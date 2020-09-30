@@ -38,8 +38,9 @@ class DataLoader():
         # base train files
         base_train_dataset = [# '/data/train/didida/didida2.txt',
                               #  '/data/train/bingchang/111.txt'
-                              # '/data/train/bingchang/100.txt'
-                              '/data/train/biwi/biwi_hotel.txt',
+                              #'/data/train/bingchang/100.txt'
+                                '/data/train/yuan/yuanshuju.txt'
+                              #'/data/train/biwi/biwi_hotel.txt',
                               # '/data/train/yuan/zuobiao.txt',
                                 # '/data/train/ceshi/100_1.txt',
                               # '/data/train/crowds/arxiepiskopi1.txt', '/data/train/crowds/crowds_zara02.txt',
