@@ -16,4 +16,6 @@ ValueError: invalid literal for int() with base 10: '393\t2563'
  
 4. 在可视化中将frame_str注释掉了
 
+5.在使用grid的时候最后一个网格tensor加入限制
+
 

@@ -107,20 +107,37 @@ def get_line_style(linestyle, line_cycle, index, num_of_color):
 
 def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, name, plot_directory, min_threshold,
                       max_ped_ratio, target_id, style, obs_length=20):
-    # true_trajs : 形状为seq_length x numNodes x 2的块状矩阵。包含节点的真实轨迹
-    # pred_trajs : 形状为seq_length x numNodes x 2的块状矩阵。包含节点的预测轨迹
+    '''
+    Parameters
+    ==========
 
-    # nodesPresent : A list of lists, of size seq_length
-    # Each list contains the nodeIDs present at that time-step in pred_traj
+    true_trajs : Numpy matrix of shape seq_length x numNodes x 2
+    Contains the true trajectories of the nodes
 
-    # obs_length : 观察轨迹的长度
-    # lookup : 查找表将ped id转换为数组索引
-    # plot_directory : 将存储绘图的目录
-    # min_threshold : 要过滤的最小轨迹长度
-    # max_ped_ratio : 要显示的帧中ped的百分比
-    # target_id : 此序列的目标ped ID
-    # style : 一个数组，包括max_r，min_r和图的偏移量（用于定心轨迹）
-    # name : Name of the plot
+    pred_trajs : Numpy matrix of shape seq_length x numNodes x 2
+    Contains the predicted trajectories of the nodes
+
+    nodesPresent : A list of lists, of size seq_length
+    Each list contains the nodeIDs present at that time-step in pred traj
+
+    obs_length : Length of observed trajectory
+
+    lookup : Lookup table converting ped ids to array indices
+
+    plot_directory : directory that plots will be stored
+
+    min_threshold : minimum trajectory lenght to be filtered
+
+    max_ped_ratio : percentage of peds in a frame to be visualized
+
+    target_id : target ped id for this sequence
+
+    style : an array includes max_r, min_r and plot ofset (for centering trajectories)
+
+
+    name : Name of the plot
+
+    '''
 
     fig_width = 10
     fig_height = 10
@@ -130,9 +147,16 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
     plot_offset = style[2]
 
     reference_point = (0, max_r)
-    # 帧将用作旋转矢量（起点（0,0），终点：此帧）
-    target_frame = 1
+    target_frame = 1  # frame will be taken for rotation vector (starting point (0,0), ending point: this frame)
     video_plot_trajs = []
+    '''
+    overall_trajs = []
+
+    overall_max_arr_x = []
+    overall_max_arr_y = []
+    overall_min_arr_x = []
+    overall_min_arr_y = []
+    '''
 
     line_width = 3
     num_of_color = 10
@@ -146,22 +170,34 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
     print("orig pred_")
     print(pred_trajs[:, look_up[target_id], :])
 
-    # 第一帧未预测，因此仅采用预测的部分
+    # first frame was not predicted, so only take predicted parts
     pred_trajs = pred_trajs[1:]
     true_trajs = true_trajs[1:]
     nodesPresent = nodesPresent[1:]
 
-    # 使用目标ped的第一帧将所有轨迹平移到中心目标ped traj
+    # print('lookup: ', look_up)
+    # print('target_id: ', target_id)
+    # translate all trajectories using first frame of target ped to center target ped traj
     true_trajs = translate(torch.from_numpy(true_trajs), nodesPresent, look_up,
                            torch.from_numpy(true_trajs[0][look_up[target_id], 0:2]))
     pred_trajs = translate(torch.from_numpy(pred_trajs), nodesPresent, look_up,
                            torch.from_numpy(pred_trajs[0][look_up[target_id], 0:2]))
 
+    # true_trajs, _= vectorize_seq_with_ped(torch.from_numpy(true_trajs), nodesPresent, look_up ,target_id)
+    # pred_trajs, _= vectorize_seq_with_ped(torch.from_numpy(pred_trajs), nodesPresent, look_up ,target_id)
     print("orig true_")
     print(true_trajs[:, look_up[target_id], :])
     print("orig pred_")
     print(pred_trajs[:, look_up[target_id], :])
 
+    # angle_true = angle_between(reference_point, (true_trajs[target_frame][look_up[target_id], 0], true_trajs[target_frame][look_up[target_id], 1]))
+    # angle_pred = angle_between(reference_point, (pred_trajs[target_frame][look_up[target_id], 0], pred_trajs[target_frame][look_up[target_id], 1]))
+
+    # true_trajs = rotate_traj_with_target_ped(true_trajs, angle_true, nodesPresent, look_up)
+    # pred_trajs = rotate_traj_with_target_ped(pred_trajs, angle_true, nodesPresent, look_up)
+
+    # print("+++++++++++++++++++++++++++++++++++++++++++++++44")
+    # print("angle: ", np.rad2deg(angle_true))
     print("true_")
     print(true_trajs[:, look_up[target_id], :])
     print("pred_")
@@ -169,20 +205,31 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
 
     dict_true = get_min_max_in_sequence(true_trajs.numpy())
     dict_pred = get_min_max_in_sequence(pred_trajs[:, look_up[target_id], :][:, None,
-                                        :].numpy())  # 由于模型原因，仅考虑预测目标ID
-
+                                        :].numpy())  # only consider prediciton of target id because of model
+    # print(dict_pred)
+    # print(dict_true)
     overaall_max_x, overaall_min_x, overaall_max_y, overaall_min_y = get_overall_max_min(dict_true, dict_pred)
+
+    # print('max_x: ', overaall_max_x,'max_y: ', overaall_max_y,'min_x: ', overaall_min_x,'min_y: ', overaall_min_y)
+
+    '''
+    print("Orig. true traj")
+    print(true_trajs)
+    print("*********************")
+    print("Orig. pred traj")
+    print(pred_trajs)
+    '''
 
     # figure parameters
     fig = plt.figure(figsize=(fig_width, fig_width))
     props = dict(fontsize=12)
 
-    # 标题字符串，其中包含此序列中的帧的ID
+    # title string which includes id of frames in this sequence
     frames_str = ' | '.join(str(int(e)) for e in frames)
     frames_str = "frame ids: " + frames_str
     plt.gca().set_title("\n".join(wrap(frames_str, 80)), props, loc='center')
 
-    # 调整调色板，标记和绘图的线条样式
+    # adjust color palette, markers and line style of plot
     cm = plt.get_cmap('tab20')
     num_of_color = 20
     colors = [cm(i) for i in np.linspace(0, 1, num_of_color)]
@@ -195,10 +242,11 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
 
     traj_length, numNodes, _ = true_trajs.shape
     traj_data = {}
+    # look_up = dict(look_up)
     inv_lookup = {v: k for k, v in look_up.items()}  # inverse lookup table -> array indices : ped_ids
 
-    # 创建一个包含帧中每个ped数据点的字典
-    for tstep in range(traj_length - 1):  # ＃实际traj长度是traj length-1
+    # create a dict that includes datapoints for each peds in the frame
+    for tstep in range(traj_length - 1):  # real traj lenght is traj_lenght-1
         pred_pos = pred_trajs[tstep, :]
         true_pos = true_trajs[tstep, :]
 
@@ -212,57 +260,75 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
                 traj_data[ped_index][0].append(true_pos[ped_index, :])
                 traj_data[ped_index][1].append(pred_pos[ped_index, :])
 
+    # print(np.array(traj_data.values()))
+
     processed_ped_number = 0  # number of peds already processed
     num_of_peds = math.ceil(max_ped_ratio * len(traj_data))  # maximum number of peds will be processed
-    print("此序列中的最大步数。: ", num_of_peds)
+    print("Max number of peds in this  seq.: ", num_of_peds)
 
-    # 随机选择num_of_peds
+    # choose num_of_peds randomly
     shuffled_ped_ids = list(range(0, len(traj_data)))
     random.shuffle(shuffled_ped_ids)
 
-    # 将目标ID添加到列表的开头，因此它将始终处理
+    # add target id to at the beginnnig of the list therefore it will process always
     shuffled_ped_ids.remove(look_up[target_id])
     shuffled_ped_ids.insert(0, look_up[target_id])
 
     processed_ped_index = []
-    real_inv_lookup = {}  # 为索引超出范围错误创建反向查找的子集
+    real_inv_lookup = {}  # create a subset of inverse lookup for index out of range error
 
     true_target_id_values = None
     pred_target_id_values = None
     target_sequence_true = None
     target_sequence_pred = None
 
-    # 每个ped的处理字典
+    # process dict for each ped
     for j in shuffled_ped_ids:
-        if processed_ped_number >= num_of_peds:  # 已处理的ped
+
+        # format_params = []
+        # print("Processing ped ", j)
+        if processed_ped_number >= num_of_peds:  # finished processed peds
             break
-        true_traj_ped = traj_data[j][0]  # [x，y]元素列表
+        true_traj_ped = traj_data[j][0]  # List of [x,y] elements
         pred_traj_ped = traj_data[j][1]
         ped_id = inv_lookup[j]
+        # print("ped id : ", ped_id, "target id :", target_id)
 
-        # 得到相应的ped和坐标
+        # get corresponding ped and coordinates
         true_x = [p[0] for p in true_traj_ped]
         true_y = [p[1] for p in true_traj_ped]
 
         pred_x = [p[0] for p in pred_traj_ped]
         pred_y = [p[1] for p in pred_traj_ped]
 
-        real_inv_lookup[processed_ped_number] = ped_id  # 分配处理的ped编号和ped id
+        real_inv_lookup[processed_ped_number] = ped_id  # assign processed ped number and ped id
 
         if not len(true_x) > min_threshold or not len(
-                true_x) > 2:  # 如果len小于2或min_threshold，则跳过轨迹
-            print("Ped处理被中止，因为其在此序列中的轨迹长度小于阈值或1个点")
+                true_x) > 2:  # skip the trajectory if len is smaller than 2 or min_threshold
+            print(
+                "Ped processing is aborted because its trajectory lenght in this sequence is smaller than threshold or 1 points")
             continue
         else:
             processed_ped_index.append(processed_ped_number)
 
             processed_ped_number = processed_ped_number + 1
 
-        # 获得标记和线条样式
+        # get a marker and line style
         marker = get_marker_style(markers, marker, j, num_of_color)
         lines = get_marker_style(line_style, lines, j, num_of_color)
 
-        # 提取非Nan值并根据此帧中的最小和最大总体值对其进行缩放
+        # print("................................")
+        # print("ped_id: ", ped_id)
+        # print("true_x")
+        # print(true_x)
+        # print("true_y")
+        # print(true_y)
+        # print("pred_x")
+        # print(pred_x)
+        # print("pred_y")
+        # print(pred_y)
+
+        # exctract non-nan values and scale it according to min and max overall values in this frame
         filtered_true_x = min_max_scaler(np.array([x for x in true_x if not np.isnan(x)]), overaall_min_x,
                                          overaall_max_x, min_r, max_r)
         filtered_true_y = min_max_scaler(np.array([y for y in true_y if not np.isnan(y)]), overaall_min_y,
@@ -272,10 +338,57 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
         filtered_pred_y = min_max_scaler(np.array([y for y in pred_y if not np.isnan(y)]), overaall_min_y,
                                          overaall_max_y, min_r, max_r)
 
-        # 图例标签
+        # <-----------------------------Experimental block ------------------------------>
+        # filtered_true_x = vectorize_traj_point_arr(min_max_scaler(np.array([x for x in true_x if not np.isnan(x)]), overaall_min_x, overaall_max_x, min_r, max_r))
+        # filtered_true_y = vectorize_traj_point_arr(min_max_scaler(np.array([y for y in true_y if not np.isnan(y)]), overaall_min_y, overaall_max_y, min_r, max_r))
+        # filtered_pred_x = vectorize_traj_point_arr(min_max_scaler(np.array([x for x in pred_x if not np.isnan(x)]), overaall_min_x, overaall_max_x, min_r, max_r))
+        # filtered_pred_y = vectorize_traj_point_arr(min_max_scaler(np.array([y for y in pred_y if not np.isnan(y)]), overaall_min_y, overaall_max_y, min_r, max_r))
+        '''
+        print("**********************************************************************")
+        print("filtered_true_x")
+        print(filtered_true_x)
+        print("filtered_true_y y")
+        print(filtered_true_y)
+        print("filtered_pred_x")
+        print(filtered_pred_x)
+        print("filtered_pred_y")
+        print(filtered_pred_y)
+        '''
+
+        '''
+        initial_angle_true  = angle_between(reference_point, (filtered_true_x[1], filtered_true_y[1]))
+        initial_angle_pred  = angle_between(reference_point, (filtered_pred_x[1], filtered_pred_y[1]))
+
+
+
+
+        #print("Angles true: ", np.rad2deg(initial_angle_true), "pred: ", np.rad2deg(initial_angle_pred))
+        #print("******************************************************************************************")
+
+        rotate_traj(filtered_true_x, filtered_true_y, initial_angle_true)
+        rotate_traj(filtered_pred_x, filtered_pred_y, initial_angle_pred)
+        print("filtered_true_x x trajectory rotated:")
+        print(filtered_true_x)
+        print("filtered_true_y y. trajectory rotated:")
+        print(filtered_true_y)
+        print("filtered_pred_x x traj. rotated")
+        print(filtered_pred_x)
+        print("filtered_pred_y y traj. rotated")
+        print(filtered_pred_y)
+        print("------------------------------------")
+
+
+        filtered_true_x = vectorize_traj_point_arr((filtered_true_x))
+        filtered_true_y = vectorize_traj_point_arr((filtered_true_y))
+        filtered_pred_x = vectorize_traj_point_arr((filtered_pred_x))
+        filtered_pred_y = vectorize_traj_point_arr((filtered_pred_y))
+        <----------------------------------------------------------------------------->
+        '''
+        # labels for legend
         true_ped_text = 'ped ' + str(ped_id) + ' true'
         pred_ped_text = 'ped ' + str(ped_id) + ' pred.'
-        if ped_id == target_id:  # 如果这是目标ped行人，则还要绘制预测线
+        # print("ped id : ", ped_id, "target id :", target_id)
+        if ped_id == target_id:  # if this is target ped, plot predicted line as well
             print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
             print("target_id")
             print(filtered_true_x, filtered_true_y)
@@ -285,16 +398,21 @@ def plot_trajectories(true_trajs, pred_trajs, nodesPresent, look_up, frames, nam
             pred_target_id_values = [filtered_pred_x[0], filtered_pred_y[0]]
             true_ped_text = 'target ped ' + str(ped_id) + ' true'
             pred_ped_text = 'target ped ' + str(ped_id) + ' pred.'
+            # filtered_pred_x = filtered_pred_x - pred_target_id_values[0]
+            # filtered_pred_y = filtered_pred_y - pred_target_id_values[1]
             target_sequence_pred = [filtered_pred_x, filtered_pred_y]
             pred_line = plt.plot(filtered_pred_x, filtered_pred_y, linestyle=next(lines), marker=next(marker),
                                  linewidth=line_width, label=pred_ped_text)
+            # annotate_plot(plt, filtered_pred_x, filtered_pred_y, list(range(1, obs_length+1))) #annotation is off
+        # filtered_true_x = filtered_true_x - true_target_id_values[0]
+        # filtered_true_y = filtered_true_y - true_target_id_values[1]
         if ped_id == target_id:
             target_sequence_true = [filtered_true_x, filtered_true_y]
 
         true_line = plt.plot(filtered_true_x, filtered_true_y, linestyle=next(lines), marker=next(marker),
                              linewidth=line_width, label=true_ped_text)
         video_plot_trajs.append([[filtered_true_x, filtered_true_y],
-                                 [filtered_pred_x, filtered_pred_y]])  # 将用于每一帧的视频
+                                 [filtered_pred_x, filtered_pred_y]])  # will be used for a video for each frame
 
     plt.gca().legend(loc='best')  # legend adjustment
     # center trajectories in plot
@@ -338,9 +456,12 @@ def create_plot_animation(plt, trajs, shuffled_ped_ids, target_id, inv_lookup, s
             if frame_num == 0:
                 curr_marker = next(marker_cycle)
                 marker_arr.append(curr_marker)
+            # if len(filtered_true_x) < frame_num or len(filtered_pred_x) < frame_num:
+            #    del trajs[index]
+            #    continue
             ped_id = inv_lookup[index]
             selected_frames = data_frames[0:frame_num + 1]
-            # frame_str = "Frame: " + str(int(selected_frames[-1]))
+            frame_str = "Frame: " + str(int(selected_frames[-1]))
             true_ped_text = 'ped ' + str(ped_id) + ' true'
             pred_ped_text = 'ped ' + str(ped_id) + ' pred.'
             if ped_id == target_id:
@@ -368,9 +489,7 @@ def create_plot_animation(plt, trajs, shuffled_ped_ids, target_id, inv_lookup, s
 
             frame_obj.append(true_sc)
 
-        # title = plt.text(0.5, 1.01, frame_str, ha="center", va="bottom", color=np.random.rand(3),
-        #                  transform=plt.gca().transAxes, fontsize="large")
-        title = plt.text(0.5, 1.01, '测试', ha="center", va="bottom", color=np.random.rand(3),
+        title = plt.text(0.5, 1.01, frame_str, ha="center", va="bottom", color=np.random.rand(3),
                          transform=plt.gca().transAxes, fontsize="large")
         frame_obj.append(title)
         frames.append(frame_obj)
@@ -494,10 +613,18 @@ def plot_target_trajs(trajs, plot_directory, num_of_traj, plot_offset):
 
     shuffle(colors)
 
-    # 计算每个轨迹的误差，并按降序返回误差值及其索引
+    # calculate error for each trajectory and return error values and their indices in descending order
     biggest_err_index, err_values = calculate_traj_errors(trajs, num_of_traj)
+    # print(biggest_err_index)
+    # selected_err_trajs = np.array(trajs)[biggest_err_index]
     seq_str = "| "
+    # dict_true = np.max([np.max(true_traj) for true_traj in selected_err_trajs[:, 0]])
+    # print(selected_err_trajs)
 
+    # dict_pred = get_min_max_in_sequence(selected_err_trajs)#only consider prediciton of target id because of model
+    # print(dict_pred)
+    # print(dict_true)
+    # overaall_max_x, overaall_min_x, overaall_max_y, overaall_min_y = get_overall_max_min(dict_true, dict_pred)
     overall_max_x = -1000
     overall_max_y = -1000
     overall_min_x = 1000
@@ -506,6 +633,7 @@ def plot_target_trajs(trajs, plot_directory, num_of_traj, plot_offset):
     for arr_index, index in enumerate(biggest_err_index):
         true_traj = trajs[index][0]
         pred_traj = trajs[index][1]
+        # seq_num = biggest_err_index[arr_index]
         marker_cycle = get_marker_style(marker, marker_cycle, arr_index * 2, num_of_color)
         line_cycle = get_marker_style(line_style, line_cycle, arr_index * 2, num_of_color)
 
@@ -595,13 +723,9 @@ def main():
 
     # creation of paths
     save_plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'plots/')
-    # print(plot_file_directory)
-    # plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory)
-    plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory, 'ceshi')
+    plot_directory = os.path.join(f_prefix, 'plot', method_name, model_name, plot_file_directory, 'yuan')
     video_directory = os.path.join(f_prefix, 'plot', method_name, model_name, 'videos/')
-    # print(plot_directory)
     plot_file_name = get_all_file_names(plot_directory)
-    # plot_file_name = ['biwi_hotel_4.pkl']
     num_of_data = np.clip(args.num_of_data, 0, len(plot_file_name))
     plot_file_name = random.sample(plot_file_name, num_of_data)
 
@@ -622,6 +746,7 @@ def main():
             os.makedirs(video_save_directory)
         if not os.path.exists(figure_save_directory):
             os.makedirs(figure_save_directory)
+
         try:
             f = open(file_path, 'rb')
         except FileNotFoundError:

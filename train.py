@@ -226,9 +226,10 @@ def train(args):
                                                        args.grid_size, args.use_cuda)
                         grids[dataloader.dataset_pointer].append(grid_seq)
                     else:
-                        grid_seq = getSequenceGridMask(x_seq, dataset_data, PedsList_seq, args.neighborhood_size,
-                                                       args.grid_size, args.use_cuda)
-
+                        temp = (num_batch * dataloader.batch_size) + sequence
+                        if temp > 128:
+                            temp = 128
+                        grid_seq = grids[dataloader.dataset_pointer][temp]
                 else:
                     grid_seq = getSequenceGridMask(x_seq, dataset_data, PedsList_seq, args.neighborhood_size,
                                                    args.grid_size, args.use_cuda)

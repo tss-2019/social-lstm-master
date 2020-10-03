@@ -38,11 +38,8 @@ class DataLoader():
         # base train files
         base_train_dataset = [# '/data/train/didida/didida2.txt',
                               #  '/data/train/bingchang/111.txt'
-                              #'/data/train/bingchang/100.txt'
-                                '/data/train/yuan/yuanshuju.txt'
-                              #'/data/train/biwi/biwi_hotel.txt',
-                              # '/data/train/yuan/zuobiao.txt',
-                                # '/data/train/ceshi/100_1.txt',
+                             '/data/train/yuan/circle2.txt'
+                             #'/data/train/biwi/biwi_hotel.txt',
                               # '/data/train/crowds/arxiepiskopi1.txt', '/data/train/crowds/crowds_zara02.txt',
                               # '/data/train/crowds/crowds_zara03.txt', '/data/train/crowds/students001.txt',
                               # '/data/train/crowds/students003.txt',
@@ -66,8 +63,7 @@ class DataLoader():
                               ]
         # dimensions of each file set
         # self.dataset_dimensions = {'biwi': [720, 576], 'crowds': [720, 576], 'stanford': [595, 326], 'mot': [768, 576]}
-        self.dataset_dimensions = {'train': [595, 326], 'validation': [595, 326]}
-        # self.dataset_dimensions = {'test': [720, 576]}
+        self.dataset_dimensions = {'train': [720, 576], 'validation': [595, 326]}
 
         # 原始数据所在的数据目录列表
         self.base_train_path = 'data/train/'
@@ -238,6 +234,7 @@ class DataLoader():
             if self.infer is False:
                 df = pd.read_csv(directory, dtype={'frame_num': 'int', 'ped_id': 'int'}, delimiter=' ', header=None,
                                  names=column_names)
+
                 self.target_ids = np.array(df.drop_duplicates(subset={'ped_id'}, keep='first', inplace=False)['ped_id'])
 
 
@@ -438,13 +435,6 @@ class DataLoader():
                 # 获取序列的正确目标ped ID
                 target_ids.append(
                     self.target_ids[self.dataset_pointer][math.floor((self.frame_pointer) / self.seq_length)])
-                # print('获取序列的正确目标ped ID')
-                # print(target_ids)
-                # print(self.dataset_pointer)
-                # print(math.floor((self.frame_pointer) / self.seq_length))
-
-                # 这个是原本代码中存在的，用原始数据的时候不会出错，实际上也越界了，但是不会出bug
-                # 但是当使用冰场数据的时候会发生索引越界的情况
                 self.frame_pointer += self.seq_length
 
                 d.append(self.dataset_pointer)
